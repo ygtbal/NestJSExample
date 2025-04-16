@@ -12,4 +12,7 @@ export class CompanyService {
   public async getAll() {
     return await this.companyRepository.find();
   }
+  public async create(dto: Company): Promise<Company> {
+    return await this.companyRepository.save(dto);
+  }
 }
