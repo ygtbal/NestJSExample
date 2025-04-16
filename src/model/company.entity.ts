@@ -1,7 +1,8 @@
 // company.entity.ts
-import { Column, Entity } from 'typeorm';
+import { Column, Entity, OneToMany } from 'typeorm';
 import { BaseEntity } from './base.entity';
 import { CompanyType } from '../enum/company.enum';
+import { Acc } from './acc.entity';
 
 @Entity({ name: 'company' })
 export class Company extends BaseEntity {
@@ -19,4 +20,10 @@ export class Company extends BaseEntity {
 
   @Column({ type: 'enum', enum: CompanyType })
   companyType: CompanyType;
+
+  @Column({ type: 'int', default: 0 })
+  totalAcc: number;
+
+  @OneToMany(() => Acc, (acc) => acc.company)
+  accs: Acc[];
 }

@@ -1,8 +1,17 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 // company.dto.ts
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsUUID, IsEmail, IsBoolean, IsDate } from 'class-validator';
+import {
+  IsString,
+  IsUUID,
+  IsEmail,
+  IsBoolean,
+  IsDate,
+  IsInt,
+  IsArray,
+} from 'class-validator';
 import { CompanyType } from '../enum/company.enum';
+import { Acc } from '../model/acc.entity';
 
 // it is readonly because it is used in the response
 // and we don't want to allow the client to modify it
@@ -38,4 +47,10 @@ export class CompanyDTO implements Readonly<CompanyDTO> {
   @ApiProperty({ required: false })
   @IsDate()
   updatedAt: Date;
+  @ApiProperty({ required: false })
+  @IsInt()
+  totalAcc: number;
+  @ApiProperty({ required: false })
+  @IsArray()
+  accs: Acc[]; // it is an array of acc ids
 }
