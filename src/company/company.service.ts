@@ -12,6 +12,15 @@ export class CompanyService {
   public async getAll() {
     return await this.companyRepository.find();
   }
+  public async findById(id: string): Promise<Company> {
+    const company = await this.companyRepository.findOne({
+      where: { id },
+    });
+    if (!company) {
+      throw new Error(`Company with id ${id} not found`);
+    }
+    return company;
+  }
   public async create(dto: Company): Promise<Company> {
     return await this.companyRepository.save(dto);
   }
