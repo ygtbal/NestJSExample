@@ -7,8 +7,10 @@ import {
   ManyToOne,
   JoinColumn,
   PrimaryGeneratedColumn,
+  OneToMany,
 } from 'typeorm';
 import { Company } from './company.entity';
+import { AccItem } from './acc_item.entity';
 
 @Entity({ name: 'acc' })
 export class Acc {
@@ -31,4 +33,6 @@ export class Acc {
   @ManyToOne(() => Company, (company) => company.accs, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'company_id' })
   company: Company;
+  @OneToMany(() => AccItem, (acc_item) => acc_item.acc, {})
+  acc_items: AccItem[];
 }
