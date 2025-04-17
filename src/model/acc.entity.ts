@@ -24,6 +24,8 @@ export class Acc {
   unit_price: number;
   @Column({ type: 'decimal' })
   amount: number;
+  @Column({ type: 'decimal', default: 0 })
+  total_payment: number;
   @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
   @UpdateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
