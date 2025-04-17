@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { configService } from './config/config.service';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { DataSource } from 'typeorm';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -16,6 +17,11 @@ async function bootstrap() {
     );
 
     SwaggerModule.setup('docs', app, document);
+  }
+  if (configService.isProduction()) {
+    const dataSource = new DataSource(configService.getDataSourceOptions());
+    await dataSource.initialize();
+    await dataSource.runMigrations();
   }
   await app.listen(process.env.PORT ?? 3000);
 }
