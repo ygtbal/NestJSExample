@@ -51,6 +51,12 @@ export class CompanyDTO implements Readonly<CompanyDTO> {
   @IsInt()
   totalAcc: number;
   @ApiProperty({ required: false })
+  @IsInt()
+  paid: number;
+  @ApiProperty({ required: false })
+  @IsInt()
+  rest: number;
+  @ApiProperty({ required: false })
   @IsArray()
   accs: Acc[]; // it is an array of acc ids
 }

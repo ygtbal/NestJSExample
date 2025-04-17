@@ -16,15 +16,15 @@ import { AccItem } from './acc_item.entity';
 export class Acc {
   @PrimaryGeneratedColumn('uuid')
   id: string;
-  @Column({ type: 'decimal' })
+  @Column({ type: 'int' })
   total_price: number;
   @Column({ type: 'varchar' })
   type: string;
-  @Column({ type: 'decimal' })
+  @Column({ type: 'int' })
   unit_price: number;
-  @Column({ type: 'decimal' })
+  @Column({ type: 'int' })
   amount: number;
-  @Column({ type: 'decimal', default: 0 })
+  @Column({ type: 'int', default: 0 })
   total_payment: number;
   @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;

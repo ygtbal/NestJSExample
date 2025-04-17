@@ -2,16 +2,20 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AccItem } from '../model/acc_item.entity';
 import { Acc } from '../model/acc.entity';
-import { Repository } from 'typeorm';
+import { Repository, DataSource } from 'typeorm';
 import { AccItemDto } from './acc_item.dto';
+import { Company } from '../model/company.entity';
 
 @Injectable()
 export class AccItemService {
   constructor(
+    @InjectRepository(Company)
+    private readonly companyRepository: Repository<Company>,
     @InjectRepository(AccItem)
     private readonly accItemRepository: Repository<AccItem>,
     @InjectRepository(Acc)
     private readonly accRepository: Repository<Acc>,
+    private readonly dataSource: DataSource,
   ) {}
 
   public async getAll(): Promise<AccItem[]> {
@@ -28,10 +32,41 @@ export class AccItemService {
     return accItem;
   }
   public async create(dto: AccItemDto): Promise<AccItem> {
-    const acc = await this.accRepository.findOneByOrFail({
-      id: dto.accId,
+    return await this.dataSource.transaction(async (manager) => {
+      const acc = await manager.findOne(Acc, {
+        where: { id: dto.accId },
+        relations: ['company'],
+      });
+      if (!acc) {
+        throw new Error(`Acc with id ${dto.accId} not found`);
+      } else {
+        const accItem = manager.create(AccItem, { ...dto, acc });
+        const savedAccItem = await manager.save(AccItem, accItem);
+        acc.total_payment += Number(savedAccItem.payment);
+        await manager.save(Acc, acc);
+        const company = acc.company;
+        company.paid += Number(savedAccItem.payment);
+        company.rest = company.totalAcc - company.paid;
+        await manager.save(Company, company);
+        return savedAccItem;
+      }
     });
-    const accItem = this.accItemRepository.create({ ...dto, acc });
-    return await this.accItemRepository.save(accItem);
+    // const acc = await this.accRepository.findOne({
+    //   where: { id: dto.accId },
+    //   relations: ['company'],
+    // });
+    // if (!acc) {
+    //   throw new Error(`Acc with id ${dto.accId} not found`);
+    // } else {
+    //   const accItem = this.accItemRepository.create({ ...dto, acc });
+    //   const savedAccItem = await this.accItemRepository.save(accItem);
+    //   acc.total_payment += Number(savedAccItem.payment);
+    //   await this.accRepository.save(acc);
+    //   const company = acc.company;
+    //   company.paid += Number(savedAccItem.payment);
+    //   company.rest = company.totalAcc - company.paid;
+    //   await this.companyRepository.save(company);
+    //   return savedAccItem;
+    // }
   }
 }

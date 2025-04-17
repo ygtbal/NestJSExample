@@ -24,6 +24,12 @@ export class Company extends BaseEntity {
   @Column({ type: 'int', default: 0 })
   totalAcc: number;
 
+  @Column({ type: 'int', default: 0 })
+  paid: number;
+
+  @Column({ type: 'int', default: 0 })
+  rest: number;
+
   @OneToMany(() => Acc, (acc) => acc.company)
   accs: Acc[];
 }
