@@ -51,22 +51,5 @@ export class AccItemService {
         return savedAccItem;
       }
     });
-    // const acc = await this.accRepository.findOne({
-    //   where: { id: dto.accId },
-    //   relations: ['company'],
-    // });
-    // if (!acc) {
-    //   throw new Error(`Acc with id ${dto.accId} not found`);
-    // } else {
-    //   const accItem = this.accItemRepository.create({ ...dto, acc });
-    //   const savedAccItem = await this.accItemRepository.save(accItem);
-    //   acc.total_payment += Number(savedAccItem.payment);
-    //   await this.accRepository.save(acc);
-    //   const company = acc.company;
-    //   company.paid += Number(savedAccItem.payment);
-    //   company.rest = company.totalAcc - company.paid;
-    //   await this.companyRepository.save(company);
-    //   return savedAccItem;
-    // }
   }
 }
