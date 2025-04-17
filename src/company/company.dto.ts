@@ -18,18 +18,18 @@ import { Acc } from '../model/acc.entity';
 // and it is a DTO because it is used to transfer data
 // between the client and the server
 export class CompanyDTO implements Readonly<CompanyDTO> {
-  @ApiProperty({ required: true })
+  @ApiProperty({ required: false })
   @IsUUID()
   id: string;
   @ApiProperty({ required: true })
   @IsString()
   name: string;
-  @ApiProperty({ required: true })
+  @ApiProperty({ required: false })
   address: string;
   @ApiProperty({ required: false })
   @IsString()
   phoneNumber: string;
-  @ApiProperty({ required: true })
+  @ApiProperty({ required: false })
   @IsEmail()
   email: string;
   @ApiProperty({ required: true })
@@ -50,6 +50,12 @@ export class CompanyDTO implements Readonly<CompanyDTO> {
   @ApiProperty({ required: false })
   @IsInt()
   totalAcc: number;
+  @ApiProperty({ required: false })
+  @IsInt()
+  paid: number;
+  @ApiProperty({ required: false })
+  @IsInt()
+  rest: number;
   @ApiProperty({ required: false })
   @IsArray()
   accs: Acc[]; // it is an array of acc ids

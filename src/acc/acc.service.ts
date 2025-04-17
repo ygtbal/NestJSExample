@@ -33,6 +33,11 @@ export class AccService {
       id: dto.companyId,
     });
     const acc = this.accRepository.create({ ...dto, company });
-    return await this.accRepository.save(acc);
+    const savedAcc = await this.accRepository.save(acc);
+
+    company.totalAcc += Number(savedAcc.total_price);
+    company.rest += Number(savedAcc.total_price);
+    await this.companyRepository.save(company);
+    return savedAcc;
   }
 }

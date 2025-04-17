@@ -19,7 +19,12 @@ export class AccDTO implements Readonly<AccDTO> {
   unit_price: number;
   @ApiProperty({ required: true })
   @IsNumber()
+  @ApiProperty({ required: true })
+  @IsNumber()
   amount: number;
+  @ApiProperty({ required: false })
+  @IsNumber()
+  total_payment: number;
   @ApiProperty({ required: false })
   @IsDate()
   createdAt: Date;

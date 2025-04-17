@@ -13,7 +13,7 @@ import { Acc } from './acc.entity';
 export class AccItem {
   @PrimaryGeneratedColumn('uuid')
   id: string;
-  @Column({ type: 'decimal' })
+  @Column({ type: 'int' })
   payment: number;
   @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
