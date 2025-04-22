@@ -21,6 +21,16 @@ export class CompanyService {
     }
     return company;
   }
+  public async update(id: string, dto: Partial<Company>): Promise<Company> {
+    const updatedCompany = await this.companyRepository.preload({
+      id,
+      ...dto,
+    });
+    if (!updatedCompany) {
+      throw new Error(`Company with id ${id} not found`);
+    }
+    return await this.companyRepository.save(updatedCompany);
+  }
   public async create(dto: Company): Promise<Company> {
     return await this.companyRepository.save(dto);
   }
