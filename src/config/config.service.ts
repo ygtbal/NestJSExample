@@ -1,5 +1,7 @@
 // TypeORM için gerekli konfigürasyon tipini içe aktarır
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
+// TypeORM için gerekli DataSourceOptions tipini içe aktarır
+import { DataSourceOptions } from 'typeorm';
 
 // .env dosyasını okuyabilmek için dotenv'i içe aktarır
 import * as dotenv from 'dotenv';
@@ -46,7 +48,7 @@ class ConfigService {
       port: parseInt(this.getValue('POSTGRES_PORT')), // Port numarası
       username: this.getValue('POSTGRES_USER'), // Kullanıcı adı
       password: this.getValue('POSTGRES_PASSWORD'), // Şifre
-      database: this.getValue('POSTGRES_DATABASE'), // Veritabanı ismi
+      database: this.getValue('POSTGRES_DB'), // Veritabanı ismi
 
       // Entity dosyalarının yolu (TypeORM otomatik tanır)
       entities: ['**/*.entity{.ts,.js}'],
@@ -58,6 +60,23 @@ class ConfigService {
       migrations: ['src/migration/*.ts'],
 
       // Production ortamında SSL bağlantısını zorunlu kılar
+      // ssl: this.isProduction(),
+    };
+  }
+
+  public getDataSourceOptions(): DataSourceOptions {
+    return {
+      type: 'postgres',
+      host: this.getValue('POSTGRES_HOST'),
+      port: parseInt(this.getValue('POSTGRES_PORT')),
+      username: this.getValue('POSTGRES_USER'),
+      password: this.getValue('POSTGRES_PASSWORD'),
+      database: this.getValue('POSTGRES_DB'),
+
+      entities: ['dist/**/*.entity{.ts,.js}'], // build edilmiş halini kullan
+      migrations: ['dist/migration/*.js'], // build edilmiş migrationlar
+      migrationsTableName: 'migration',
+
       ssl: this.isProduction(),
     };
   }
@@ -69,7 +88,7 @@ const configService = new ConfigService(process.env).ensureValues([
   'POSTGRES_PORT',
   'POSTGRES_USER',
   'POSTGRES_PASSWORD',
-  'POSTGRES_DATABASE',
+  'POSTGRES_DB',
 ]);
 
 // Dışa aktarılır, başka dosyalarda kullanılabilir

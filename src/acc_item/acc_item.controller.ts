@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Body, Param } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put } from '@nestjs/common';
 import { AccItemService } from './acc_item.service';
 import { AccItemDto } from './acc_item.dto';
 import { AccItem } from '../model/acc_item.entity';
+import { AccItemUpdateDto } from './acc_item_update.dto';
 
 @Controller('acc-item')
 export class AccItemController {
@@ -17,5 +18,12 @@ export class AccItemController {
   @Post()
   public async create(@Body() dto: AccItemDto): Promise<AccItem> {
     return await this.accItemService.create(dto);
+  }
+  @Put(':id')
+  public async update(
+    @Param('id') id: string,
+    @Body() dto: AccItemUpdateDto,
+  ): Promise<AccItem> {
+    return await this.accItemService.update(id, dto);
   }
 }
