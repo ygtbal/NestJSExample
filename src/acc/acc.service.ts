@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Acc } from '../model/acc.entity';
 import { Company } from '../model/company.entity';
-import { Repository } from 'typeorm';
+import { Repository, DataSource } from 'typeorm';
 import { AccDTO } from './acc.dto';
 
 @Injectable()
@@ -12,6 +12,7 @@ export class AccService {
     private readonly accRepository: Repository<Acc>,
     @InjectRepository(Company)
     private readonly companyRepository: Repository<Company>,
+    private readonly dataSource: DataSource,
   ) {}
 
   public async getAll(): Promise<Acc[]> {
@@ -39,5 +40,45 @@ export class AccService {
     company.rest += Number(savedAcc.total_price);
     await this.companyRepository.save(company);
     return savedAcc;
+  }
+  public async update(id: string, dto: Partial<Acc>): Promise<Acc> {
+    return await this.dataSource.transaction(async (manager) => {
+      const acc = await manager.findOne(Acc, {
+        where: { id },
+        relations: ['acc_items', 'company'],
+      });
+      if (acc?.acc_items.length) {
+        throw new Error('this has items');
+      }
+      if (!acc) {
+        throw new Error(`Acc with id ${id} not found`);
+      }
+      const totalPriceDifference = acc.total_price - (dto.total_price ?? 0);
+      const companyTotal = acc.company.totalAcc - totalPriceDifference;
+      const companyRest = acc.company.rest - totalPriceDifference;
+      const updatedAcc = await manager.preload(Acc, {
+        id,
+        ...dto,
+      });
+      if (!updatedAcc) {
+        throw new Error('Failed to preload updated acc');
+      }
+      console.log('updatedAcc', updatedAcc);
+      await manager.save(Acc, updatedAcc);
+      const companyObj = {
+        totalAcc: companyTotal,
+        rest: companyRest,
+      };
+      const updatedCompany = await manager.preload(Company, {
+        id: acc.company.id,
+        ...companyObj,
+      });
+      if (!updatedCompany) {
+        throw new Error('Failed to preload updated company');
+      }
+      await manager.save(Company, updatedCompany);
+      console.log(updatedCompany);
+      return acc;
+    });
   }
 }
