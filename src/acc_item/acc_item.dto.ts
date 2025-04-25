@@ -2,7 +2,7 @@
 // acc_item.dto.ts
 
 import { ApiProperty } from '@nestjs/swagger';
-import { IsUUID, IsNumber, IsDate } from 'class-validator';
+import { IsUUID, IsNumber, IsDate, IsBoolean } from 'class-validator';
 
 export class AccItemDto implements Readonly<AccItemDto> {
   @ApiProperty({ required: false })
@@ -17,6 +17,9 @@ export class AccItemDto implements Readonly<AccItemDto> {
   @IsDate()
   @ApiProperty({ required: false })
   updatedAt: Date;
+  @ApiProperty({ required: false })
+  @IsBoolean()
+  isDeleted: boolean;
   @ApiProperty({ required: true })
   @IsUUID()
   accId: string;

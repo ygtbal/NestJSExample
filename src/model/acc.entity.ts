@@ -32,6 +32,8 @@ export class Acc {
   updatedAt: Date;
   @Column({ type: 'varchar', default: '' })
   description: string;
+  @Column({ type: 'boolean', default: false })
+  isDeleted: boolean;
   @ManyToOne(() => Company, (company) => company.accs, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'company_id' })
   company: Company;
