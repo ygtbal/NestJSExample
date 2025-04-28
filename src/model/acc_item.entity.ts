@@ -15,6 +15,8 @@ export class AccItem {
   id: string;
   @Column({ type: 'int' })
   payment: number;
+  @Column({ type: 'boolean', default: false })
+  isDeleted: boolean;
   @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
   @UpdateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })

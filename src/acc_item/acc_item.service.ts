@@ -20,12 +20,14 @@ export class AccItemService {
   ) {}
 
   public async getAll(): Promise<AccItem[]> {
-    return await this.accItemRepository.find();
+    return await this.accItemRepository.find({
+      where: { isDeleted: false },
+    });
   }
 
   public async findById(id: string): Promise<AccItem> {
     const accItem = await this.accItemRepository.findOne({
-      where: { id },
+      where: { id, isDeleted: false },
     });
     if (!accItem) {
       throw new Error(`AccItem with id ${id} not found`);
@@ -56,7 +58,7 @@ export class AccItemService {
   public async update(id: string, dto: Partial<AccItem>): Promise<AccItem> {
     return await this.dataSource.transaction(async (manager) => {
       const accItem = await manager.findOne(AccItem, {
-        where: { id },
+        where: { id, isDeleted: false },
         relations: ['acc', 'acc.company'],
       });
       if (!accItem) {
@@ -98,6 +100,48 @@ export class AccItemService {
       }
       await manager.save(Company, updatedCompany);
       return await manager.save(AccItem, updatedAccItem);
+    });
+  }
+  public async delete(id: string): Promise<AccItem> {
+    return await this.dataSource.transaction(async (manager) => {
+      const accItem = await manager.findOne(AccItem, {
+        where: { id },
+        relations: ['acc', 'acc.company'],
+      });
+      if (!accItem) {
+        throw new Error(`Acc Item with id ${id} not found`);
+      }
+      const differ = accItem.payment;
+      const total_payment = accItem.acc.total_payment - differ;
+      const accObj = { total_payment };
+      const updatedAcc = await manager.preload(Acc, {
+        id: accItem.acc.id,
+        ...accObj,
+      });
+      if (!updatedAcc) {
+        throw new Error(`Failed to preload Acc with id ${accItem.acc.id}`);
+      }
+      await manager.save(Acc, updatedAcc);
+      const company = accItem.acc.company;
+      const companyPaid = company.paid - differ;
+      const companyRes = company.totalAcc - companyPaid;
+      const compObj = {
+        paid: companyPaid,
+        rest: companyRes,
+      };
+      const updatedCompany = await manager.preload(Company, {
+        id: company.id,
+        ...compObj,
+      });
+      if (!updatedCompany) {
+        throw new error(`Company not found`);
+      }
+      const accItemObj = {
+        ...accItem,
+        isDeleted: true,
+      };
+      await manager.save(Company, updatedCompany);
+      return await manager.save(AccItem, accItemObj);
     });
   }
 }

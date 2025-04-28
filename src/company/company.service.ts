@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Company } from '../model/company.entity';
 import { Repository } from 'typeorm';
+import { CompanyType } from '../enum/company.enum';
 
 @Injectable()
 export class CompanyService {
@@ -9,13 +10,20 @@ export class CompanyService {
     @InjectRepository(Company)
     private readonly companyRepository: Repository<Company>,
   ) {}
-  public async getAll() {
-    return await this.companyRepository.find();
+  public async getAll(companyType: CompanyType) {
+    const companyTypeValue =
+      CompanyType[companyType as keyof typeof CompanyType];
+    return await this.companyRepository.find({
+      where: { companyType: companyTypeValue },
+    });
   }
   public async findById(id: string): Promise<Company> {
-    const company = await this.companyRepository.findOne({
-      where: { id },
-    });
+    const company = await this.companyRepository
+      .createQueryBuilder('company')
+      .leftJoinAndSelect('company.accs', 'acc', 'acc.isDeleted = false')
+      .where('company.id = :id', { id })
+      .getOne();
+
     if (!company) {
       throw new Error(`Company with id ${id} not found`);
     }

@@ -26,4 +26,8 @@ export class AccItemController {
   ): Promise<AccItem> {
     return await this.accItemService.update(id, dto);
   }
+  @Put('delete/:id')
+  public async delete(@Param('id') id: string): Promise<AccItem> {
+    return await this.accItemService.delete(id);
+  }
 }
