@@ -20,12 +20,14 @@ export class AccItemService {
   ) {}
 
   public async getAll(): Promise<AccItem[]> {
-    return await this.accItemRepository.find();
+    return await this.accItemRepository.find({
+      where: { isDeleted: false },
+    });
   }
 
   public async findById(id: string): Promise<AccItem> {
     const accItem = await this.accItemRepository.findOne({
-      where: { id },
+      where: { id, isDeleted: false },
     });
     if (!accItem) {
       throw new Error(`AccItem with id ${id} not found`);
@@ -56,7 +58,7 @@ export class AccItemService {
   public async update(id: string, dto: Partial<AccItem>): Promise<AccItem> {
     return await this.dataSource.transaction(async (manager) => {
       const accItem = await manager.findOne(AccItem, {
-        where: { id },
+        where: { id, isDeleted: false },
         relations: ['acc', 'acc.company'],
       });
       if (!accItem) {

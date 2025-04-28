@@ -20,9 +20,15 @@ export class AccService {
   }
 
   public async findById(id: string): Promise<Acc> {
-    const acc = await this.accRepository.findOne({
-      where: { id },
-    });
+    const acc = await this.accRepository
+      .createQueryBuilder('acc')
+      .leftJoinAndSelect(
+        'acc.acc_items',
+        'acc_item',
+        'acc_item.isDeleted = false',
+      )
+      .where('acc.id= :id', { id })
+      .getOne();
     if (!acc) {
       throw new Error(`Acc with id ${id} not found`);
     }
@@ -43,10 +49,16 @@ export class AccService {
   }
   public async update(id: string, dto: Partial<Acc>): Promise<Acc> {
     return await this.dataSource.transaction(async (manager) => {
-      const acc = await manager.findOne(Acc, {
-        where: { id },
-        relations: ['acc_items', 'company'],
-      });
+      const acc = await manager
+        .createQueryBuilder(Acc, 'acc')
+        .leftJoinAndSelect(
+          'acc.acc_items',
+          'acc_item',
+          'acc_item.isDeleted = false',
+        )
+        .leftJoinAndSelect('acc.company', 'company')
+        .where('acc.id= :id', { id })
+        .getOne();
       if (acc?.acc_items.length) {
         throw new Error('this has items');
       }

@@ -2,14 +2,15 @@ import { Controller, Get, Post, Body, Param, Put } from '@nestjs/common';
 import { CompanyService } from './company.service';
 import { CompanyDTO } from './company.dto';
 import { UpdateCompanyDTO } from './updateCompany.dto';
+import { CompanyType } from '../enum/company.enum';
 
 @Controller('company')
 export class CompanyController {
   constructor(private readonly companyService: CompanyService) {}
 
-  @Get()
-  public async getAll() {
-    return await this.companyService.getAll();
+  @Get('/type/:companyType')
+  public async getAll(@Param('companyType') companyType: CompanyType) {
+    return await this.companyService.getAll(companyType);
   }
   @Get(':id')
   public async findById(@Param('id') id: string) {
