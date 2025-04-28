@@ -30,4 +30,9 @@ export class AccController {
   ): Promise<Acc> {
     return await this.accService.update(id, dto);
   }
+
+  @Put('delete/:id')
+  public async delete(@Param('id') id: string): Promise<Acc> {
+    return await this.accService.delete(id);
+  }
 }

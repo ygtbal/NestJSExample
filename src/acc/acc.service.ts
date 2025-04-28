@@ -81,4 +81,30 @@ export class AccService {
       return acc;
     });
   }
+  public async delete(id: string): Promise<Acc> {
+    return await this.dataSource.transaction(async (manager) => {
+      const acc = await manager.findOne(Acc, {
+        where: { id },
+        relations: ['acc_items', 'company'],
+      });
+      if (acc?.acc_items.length) {
+        throw new Error('this has items');
+      }
+      if (!acc) {
+        throw new Error(`Acc with id ${id} not found`);
+      }
+      const companyTotal = acc.company.totalAcc - acc.total_price;
+      const companyRest = acc.company.rest - acc.total_price;
+      const updatedCompany = await manager.preload(Company, {
+        id: acc.company.id,
+        totalAcc: companyTotal,
+        rest: companyRest,
+      });
+      if (!updatedCompany) {
+        throw new Error('Failed to preload updated company');
+      }
+      await manager.save(Company, updatedCompany);
+      return await manager.remove(Acc, acc);
+    });
+  }
 }
