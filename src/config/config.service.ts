@@ -36,7 +36,12 @@ class ConfigService {
   // Uygulamanın production ortamında olup olmadığını kontrol eder
   public isProduction() {
     const mode = this.getValue('MODE', false);
-    return mode != 'DEV';
+    return mode == 'PRODUCTION';
+  }
+
+  public runMigrations() {
+    const mode = this.getValue('RUN_MIGRATIONS', false);
+    return mode != 'false';
   }
 
   // TypeORM konfigürasyon ayarlarını döner
@@ -60,7 +65,7 @@ class ConfigService {
       migrations: ['src/migration/*.ts'],
 
       // Production ortamında SSL bağlantısını zorunlu kılar
-      // ssl: this.isProduction(),
+      ssl: this.isProduction(),
     };
   }
 

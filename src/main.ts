@@ -18,7 +18,8 @@ async function bootstrap() {
 
     SwaggerModule.setup('docs', app, document);
   }
-  if (configService.isProduction()) {
+  if (configService.runMigrations()) {
+    console.log('Running migrations');
     const dataSource = new DataSource(configService.getDataSourceOptions());
     await dataSource.initialize();
     await dataSource.runMigrations();
