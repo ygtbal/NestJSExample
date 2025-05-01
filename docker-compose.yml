@@ -1,0 +1,30 @@
+version: '3.8'
+services:
+  app:
+    image: tekstil-app:v1
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: tekstil-app
+    ports:
+      - '3000:3000'
+    depends_on:
+      - postgres
+    env_file:
+      - .env.docker
+    volumes:
+      - ./src :/app/src
+  postgres:
+    image: postgres
+    restart: always
+    container_name: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: mysecretpassword
+      POSTGRES_DB: tekstil_kumas
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+volumes:
+  postgres_data:
