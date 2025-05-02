@@ -57,7 +57,8 @@ class ConfigService {
       database: this.getValue('POSTGRES_DB'), // Veritabanı ismi
 
       // Entity dosyalarının yolu (TypeORM otomatik tanır)
-      entities: ['dist/**/*.entity.js'],
+      entities: ['**/*.entity{.ts,.js}'],
+
       // Migration geçmişi saklanacak tablo adı
       migrationsTableName: 'migration',
 
@@ -65,7 +66,9 @@ class ConfigService {
       migrations: ['src/migration/*.ts'],
 
       // Production ortamında SSL bağlantısını zorunlu kılar
-      ssl: this.isProduction(),
+      ssl: {
+        rejectUnauthorized: false,
+      },
     };
   }
 
@@ -82,7 +85,10 @@ class ConfigService {
       migrations: ['dist/migration/*.js'], // build edilmiş migrationlar
       migrationsTableName: 'migration',
 
-      ssl: this.isProduction(),
+      // Production ortamında SSL bağlantısını zorunlu kılar
+      ssl: {
+        rejectUnauthorized: false,
+      },
     };
   }
 }
