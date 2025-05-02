@@ -57,8 +57,7 @@ class ConfigService {
       database: this.getValue('POSTGRES_DB'), // Veritabanı ismi
 
       // Entity dosyalarının yolu (TypeORM otomatik tanır)
-      entities: ['**/*.entity{.ts,.js}'],
-
+      entities: ['dist/**/*.entity.js'],
       // Migration geçmişi saklanacak tablo adı
       migrationsTableName: 'migration',
 
