@@ -21,6 +21,7 @@ async function bootstrap() {
   if (configService.runMigrations()) {
     console.log('Running migrations');
     const dataSource = new DataSource(configService.getDataSourceOptions());
+    console.log('DB OPTIONS', configService.getDataSourceOptions()); // 👈 buraya ekle
     await dataSource.initialize();
     await dataSource.runMigrations();
   }
