@@ -65,7 +65,9 @@ class ConfigService {
       migrations: ['src/migration/*.ts'],
 
       // Production ortamında SSL bağlantısını zorunlu kılar
-      ssl: this.isProduction(),
+      ssl: {
+        rejectUnauthorized: false,
+      },
     };
   }
 
