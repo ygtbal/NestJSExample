@@ -35,9 +35,8 @@ class ConfigService {
 
   // Uygulamanın production ortamında olup olmadığını kontrol eder
   public isProduction() {
-    // const mode = this.getValue('MODE', false);
-    // return mode == 'PRODUCTION';
-    return false;
+    const mode = this.getValue('MODE', false);
+    return mode == 'PRODUCTION';
   }
 
   public runMigrations() {
@@ -57,7 +56,7 @@ class ConfigService {
       database: this.getValue('POSTGRES_DB'), // Veritabanı ismi
 
       // Entity dosyalarının yolu (TypeORM otomatik tanır)
-      entities: ['**/*.entity{.ts,.js}'],
+      entities: ['src/**/*.entity.ts', 'dist/**/*.entity.js'],
 
       // Migration geçmişi saklanacak tablo adı
       migrationsTableName: 'migration',
@@ -66,9 +65,7 @@ class ConfigService {
       migrations: ['src/migration/*.ts'],
 
       // Production ortamında SSL bağlantısını zorunlu kılar
-      ssl: {
-        rejectUnauthorized: false,
-      },
+      ssl: this.isProduction() ? { rejectUnauthorized: false } : false,
     };
   }
 
@@ -81,14 +78,12 @@ class ConfigService {
       password: this.getValue('POSTGRES_PASSWORD'),
       database: this.getValue('POSTGRES_DB'),
 
-      entities: ['dist/**/*.entity{.ts,.js}'], // build edilmiş halini kullan
+      entities: ['src/**/*.entity.ts', 'dist/**/*.entity.js'],
       migrations: ['dist/migration/*.js'], // build edilmiş migrationlar
       migrationsTableName: 'migration',
 
       // Production ortamında SSL bağlantısını zorunlu kılar
-      ssl: {
-        rejectUnauthorized: false,
-      },
+      ssl: this.isProduction() ? { rejectUnauthorized: false } : false,
     };
   }
 }
