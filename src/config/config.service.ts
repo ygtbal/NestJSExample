@@ -35,8 +35,9 @@ class ConfigService {
 
   // Uygulamanın production ortamında olup olmadığını kontrol eder
   public isProduction() {
-    const mode = this.getValue('MODE', false);
-    return mode == 'PRODUCTION';
+    // const mode = this.getValue('MODE', false);
+    // return mode == 'PRODUCTION';
+    return false;
   }
 
   public runMigrations() {
@@ -65,9 +66,7 @@ class ConfigService {
       migrations: ['src/migration/*.ts'],
 
       // Production ortamında SSL bağlantısını zorunlu kılar
-      ssl: {
-        rejectUnauthorized: false,
-      },
+      ssl: this.isProduction(),
     };
   }
 
