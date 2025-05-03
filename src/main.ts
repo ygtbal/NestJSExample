@@ -18,13 +18,13 @@ async function bootstrap() {
 
     SwaggerModule.setup('docs', app, document);
   }
-  if (configService.runMigrations()) {
-    console.log('Running migrations');
-    const dataSource = new DataSource(configService.getDataSourceOptions());
-    console.log('DB OPTIONS', configService.getDataSourceOptions()); // 👈 buraya ekle
-    await dataSource.initialize();
-    await dataSource.runMigrations();
-  }
+  // if (configService.runMigrations()) {
+  //   console.log('Running migrations');
+  //   const dataSource = new DataSource(configService.getDataSourceOptions());
+  //   console.log('DB OPTIONS', configService.getDataSourceOptions()); // 👈 buraya ekle
+  //   await dataSource.initialize();
+  //   await dataSource.runMigrations();
+  // }
   await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();
